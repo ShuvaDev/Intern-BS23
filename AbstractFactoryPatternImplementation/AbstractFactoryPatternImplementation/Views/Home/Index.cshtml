@@ -1,8 +1,223 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@using Core.Contracts.Products
+
+@{
+    var button = (IButton)ViewBag.Button;
+    var checkbox = (ICheckbox)ViewBag.Checkbox;
+    var themeName = (string)ViewBag.ThemeName;
+    bool isDark = themeName == "Dark";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!DOCTYPE html>
+<html lang="en" data-theme="@themeName.ToLower()">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Theme Demo</title>
+    <style>
+        :root {
+            --bg: #f5f4f0;
+            --surface: #ffffff;
+            --border: rgba(0,0,0,0.09);
+            --border-md: rgba(0,0,0,0.14);
+            --text: #1a1a1d;
+            --muted: #888780;
+            --accent: #185FA5;
+            --accent-bg: rgba(24,95,165,0.08);
+        }
+
+        [data-theme="dark"] {
+            --bg: #0d0d0f;
+            --surface: #17171a;
+            --border: rgba(255,255,255,0.08);
+            --border-md: rgba(255,255,255,0.14);
+            --text: #f0eee8;
+            --muted: #888784;
+            --accent: #9dc23a;
+            --accent-bg: rgba(157,194,58,0.1);
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: system-ui, -apple-system, sans-serif;
+            font-size: 15px;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 24px;
+        }
+
+        .page {
+            width: 100%;
+            max-width: 560px;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-bottom: 4px;
+        }
+
+        .page-sub {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 24px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 0.5px solid var(--border);
+            border-radius: 10px;
+            padding: 18px;
+        }
+
+        .card-head {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 5px;
+        }
+
+        .card-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 14px;
+        }
+
+        .preview {
+            background: var(--bg);
+            border: 0.5px solid var(--border);
+            border-radius: 7px;
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 84px;
+            margin-bottom: 12px;
+        }
+
+        .f-btn {
+            padding: 8px 20px;
+            border-radius: 7px;
+            font-size: 14px;
+            font-weight: 500;
+            border: 0.5px solid var(--border-md);
+            cursor: pointer;
+            font-family: inherit;
+            transition: opacity 0.15s;
+        }
+
+        .f-btn:hover {
+            opacity: 0.75;
+        }
+
+        .f-btn-dark {
+            background: #1a1a1d;
+            color: #f0eee8;
+        }
+
+        .f-btn-light {
+            background: #f0eee8;
+            color: #1a1a1d;
+        }
+
+        .f-check-wrap {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .f-check {
+            width: 17px;
+            height: 17px;
+            border-radius: 4px;
+            border: 0.5px solid var(--border-md);
+            background: var(--bg);
+            appearance: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+            flex-shrink: 0;
+            position: relative;
+            transition: background 0.15s;
+        }
+
+        .f-check:checked {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .f-check:checked::after {
+            content: '';
+            position: absolute;
+            left: 4px;
+            top: 1.5px;
+            width: 5px;
+            height: 9px;
+            border: 1.5px solid #fff;
+            border-top: none;
+            border-left: none;
+            transform: rotate(42deg);
+        }
+
+        .code-tag {
+            font-family: ui-monospace, monospace;
+            font-size: 12px;
+            background: var(--bg);
+            border: 0.5px solid var(--border);
+            border-radius: 5px;
+            padding: 6px 10px;
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+
+        <p class="page-title">@themeName Theme</p>
+
+        <div class="grid">
+
+            <div class="card">
+                <div class="card-title">@button.Label</div>
+                <div class="preview">
+                    <button class="f-btn @(isDark ? "f-btn-dark" : "f-btn-light")">
+                        @button.Label
+                    </button>
+                </div>
+                <div class="code-tag">@button.CssClass</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">@checkbox.Label</div>
+                <div class="preview">
+                    <label class="f-check-wrap">
+                        <input type="checkbox" class="f-check" checked />
+                        <span>@checkbox.Label</span>
+                    </label>
+                </div>
+                <div class="code-tag">@checkbox.CssClass</div>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>
